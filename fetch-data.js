@@ -1,49 +1,45 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const addButton = document.getElementById("add-task-btn");
-    const taskInput = document.getElementById("task-input");
-    const taskList = document.getElementById("task-list");
+document.addEventListener("DOMContentLoaded", function () {
 
-    // Function to add a task
-    function addTask() {
-        const taskText = taskInput.value.trim();
+    async function fetchUserData() {
+        const apiUrl = 'https://jsonplaceholder.typicode.com/users';
+        const dataContainer = document.getElementById("api-data");
 
-        if (taskText === "") {
-            alert("Input is empty!");
-            return;
+        try {
+            const response = await fetch(apiUrl);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const users = await response.json();
+            console.log("Fetched users:", users);
+
+            dataContainer.innerHTML = "";
+            
+            const userList = document.createElement("ul");
+            // Loop through each user
+            users.forEach(function(user) {
+                // Create a <li> element
+                const listItem = document.createElement("li");
+
+                // Set the text content to the user's name
+                listItem.textContent = `${user.name}`;
+
+                // Append the <li> to the <ul>
+                userList.appendChild(listItem);
+            });
+
+            dataContainer.appendChild(userList);
+            // users.forEach(user => {
+            //     const userDiv = document.createElement("div");
+            //     userDiv.textContent = `${user.name} (${user.email})`;
+            //     dataContainer.appendChild(userDiv);
+            // });
+
+        } catch (error) {
+            console.error("Failed to load user data", error);
         }
-
-        // Create new li element
-        const listItem = document.createElement("li");
-        listItem.textContent = taskText;
-
-        // Create remove button
-        const removeBtn = document.createElement("button");
-        removeBtn.textContent = "Remove";
-        removeBtn.className = "remove-btn";
-
-        // Remove task when button is clicked
-        removeBtn.onclick = function() {
-            taskList.removeChild(listItem);
-        };
-
-        // Append remove button to li
-        listItem.appendChild(removeBtn);
-
-        // Append li to task list
-        taskList.appendChild(listItem);
-
-        // Clear input field
-        taskInput.value = "";
     }
 
-    // Add event listener for click on Add button
-    addButton.addEventListener("click", addTask);
-
-    // Add event listener for Enter key in input
-    taskInput.addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            addTask();
-        }
-    });
+    fetchUserData();
 });
-
